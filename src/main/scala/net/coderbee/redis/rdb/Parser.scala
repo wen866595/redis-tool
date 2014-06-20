@@ -26,24 +26,24 @@ class Parser(ins: InputStream, visitor: RdbVisitor) {
             val flag = readUint()
 
             flag match {
-                // Ö¸³ö "ÓĞĞ§ÆÚÏŞÊ±¼äÊÇºÀÃëÎªµ¥Î»". ÔÚÕâÖ®ºó£¬¶ÁÈ¡8×Ö½ÚÎŞ·ûºÅ³¤ÕûÊı×÷ÎªÓĞĞ§ÆÚÏŞÊ±¼ä
+                // æŒ‡å‡º "æœ‰æ•ˆæœŸé™æ—¶é—´æ˜¯è±ªç§’ä¸ºå•ä½". åœ¨è¿™ä¹‹åï¼Œè¯»å–8å­—èŠ‚æ— ç¬¦å·é•¿æ•´æ•°ä½œä¸ºæœ‰æ•ˆæœŸé™æ—¶é—´
                 case 0xFC =>
                     val mills = readLeLong(8)
                     val valType: Int = read()
                     decodeKV(mills, valType)
 
-                // Ö¸³ö "ÓĞĞ§ÆÚÏŞÊ±¼äÊÇÃëÎªµ¥Î»". ÔÚÕâÖ®ºó£¬¶ÁÈ¡4×Ö½ÚÎŞ·ûºÅÕûÊı×÷ÎªÓĞĞ§ÆÚÏŞÊ±¼ä
+                // æŒ‡å‡º "æœ‰æ•ˆæœŸé™æ—¶é—´æ˜¯ç§’ä¸ºå•ä½". åœ¨è¿™ä¹‹åï¼Œè¯»å–4å­—èŠ‚æ— ç¬¦å·æ•´æ•°ä½œä¸ºæœ‰æ•ˆæœŸé™æ—¶é—´
                 case 0xFD =>
                     val second = readLeLong(4)
                     val valType: Int = read()
                     decodeKV(second * 1000, valType)
 
-                // Ö¸³öÊı¾İ¿âÑ¡ÔñÆ÷
+                // æŒ‡å‡ºæ•°æ®åº“é€‰æ‹©å™¨
                 case 0xFE =>
                     val dbNum = parseDbNum()
                     visitor.onDB(dbNum)
 
-                // RDB ÎÄ¼ş½áÊøÖ¸Ê¾Æ÷
+                // RDB æ–‡ä»¶ç»“æŸæŒ‡ç¤ºå™¨
                 case 0xFF =>
                     end = true
                     visitor.onRdbEnd
@@ -52,7 +52,7 @@ class Parser(ins: InputStream, visitor: RdbVisitor) {
                         val get = crc32.getValue()
                     }
 
-                // Õâ¸ö¼üÖµ¶ÔÃ»ÓĞÓĞĞ§ÆÚÏŞ¡£$value_type ±£Ö¤ != to FD, FC, FE and FF
+                // è¿™ä¸ªé”®å€¼å¯¹æ²¡æœ‰æœ‰æ•ˆæœŸé™ã€‚$value_type ä¿è¯ != to FD, FC, FE and FF
                 case _ => decodeKV(-1, flag)
             }
         } while (!end)
@@ -63,16 +63,16 @@ class Parser(ins: InputStream, visitor: RdbVisitor) {
 
         val value: Any =
             valueType match {
-                case 0 => readString() // String ±àÂë
-                case 1 => decodeList() //  List ±àÂë
-                case 2 => decodeSet() //  Set ±àÂë
-                case 3 => decodeSortedset() //  Sorted Set ±àÂë
-                case 4 => decodeHash() //  Hash ±àÂë
-                case 9 => decodeZipmap() //  Zipmap ±àÂë
-                case 10 => decodeZiplist() //  Ziplist ±àÂë
-                case 11 => decodeIntset() //  IntSet ±àÂë
-                case 12 => decodeSortedsetInZiplist() //  ÒÔ Ziplist ±àÂëµÄ Sorted Set
-                case 13 => decodeHashmapInZiplist() //  ÒÔ Ziplist ±àÂëµÄ Hashmap¡± £¨ÔÚrdb°æ±¾4ÖĞÒıÈë£©
+                case 0 => readString() // String ç¼–ç 
+                case 1 => decodeList() //  List ç¼–ç 
+                case 2 => decodeSet() //  Set ç¼–ç 
+                case 3 => decodeSortedset() //  Sorted Set ç¼–ç 
+                case 4 => decodeHash() //  Hash ç¼–ç 
+                case 9 => decodeZipmap() //  Zipmap ç¼–ç 
+                case 10 => decodeZiplist() //  Ziplist ç¼–ç 
+                case 11 => decodeIntset() //  IntSet ç¼–ç 
+                case 12 => decodeSortedsetInZiplist() //  ä»¥ Ziplist ç¼–ç çš„ Sorted Set
+                case 13 => decodeHashmapInZiplist() //  ä»¥ Ziplist ç¼–ç çš„ Hashmapâ€ ï¼ˆåœ¨rdbç‰ˆæœ¬4ä¸­å¼•å…¥ï¼‰
             }
 
         expiredMills match {
@@ -126,7 +126,7 @@ class Parser(ins: InputStream, visitor: RdbVisitor) {
                 val value = new RdbString(buf, index, vlen)
                 index = index + vlen
 
-                // Ìø¹ı¿ÕÏĞ×Ö½Ú
+                // è·³è¿‡ç©ºé—²å­—èŠ‚
                 index = index + free
 
                 map.+=((key, value))
@@ -204,11 +204,11 @@ class Parser(ins: InputStream, visitor: RdbVisitor) {
         }
     }
 
-    // ·µ»Ø£º (ÌõÄ¿ÀàĞÍc:×Ö·û´® i:ÕûÊı,  rawBytes³¤¶È,  ĞÂÏÂ±êÎ»ÖÃ)
+    // è¿”å›ï¼š (æ¡ç›®ç±»å‹c:å­—ç¬¦ä¸² i:æ•´æ•°,  rawBytesé•¿åº¦,  æ–°ä¸‹æ ‡ä½ç½®)
     def decodeSpecialFlag(buf: Array[Byte], start: Int): Tuple3[Char, Int, Int] = {
         var index = start
         var rawBytesLen: Long = 0
-        var flag = 'c' // Ä¬ÈÏ¼ÙÉèÌõÄ¿ÊÇ×Ö·û´®µÄ
+        var flag = 'c' // é»˜è®¤å‡è®¾æ¡ç›®æ˜¯å­—ç¬¦ä¸²çš„
         val specialFlag = buf(index) & 0xFF
         index = index + 1
 
@@ -224,8 +224,8 @@ class Parser(ins: InputStream, visitor: RdbVisitor) {
                 index = index + 4
             }
 
-            case _ => { // ÓĞ·ûºÅÕûÊı
-                flag = 'i' // ÌõÄ¿ÊÇÕûÊı
+            case _ => { // æœ‰ç¬¦å·æ•´æ•°
+                flag = 'i' // æ¡ç›®æ˜¯æ•´æ•°
 
                 specialFlag >>> 4 match {
                     case 0x0C => {
@@ -331,25 +331,25 @@ class Parser(ins: InputStream, visitor: RdbVisitor) {
         b >>> 6 match {
             case 0x03 => {
                 b & 0x3F match {
-                    // 0 ±íÊ¾½ÓÏÂÀ´ÊÇ8bitÕûÊı
+                    // 0 è¡¨ç¤ºæ¥ä¸‹æ¥æ˜¯8bitæ•´æ•°
                     case 0 =>
                         val i8 = read()
                         new RdbString(i8.byteValue)
 
-                    // 1 ±íÊ¾½ÓÏÂÀ´ÊÇ16bitÕûÊı
+                    // 1 è¡¨ç¤ºæ¥ä¸‹æ¥æ˜¯16bitæ•´æ•°
                     case 1 =>
                         val i16 = readUint() | read() << 8
                         new RdbString(i16.shortValue)
 
-                    // 2 ±íÊ¾½ÓÏÂÀ´ÊÇ32bitÕûÊı
+                    // 2 è¡¨ç¤ºæ¥ä¸‹æ¥æ˜¯32bitæ•´æ•°
                     case 2 =>
                         val i32 = readUint() | readUint() << 8 | readUint() << 16 | read() << 24
                         new RdbString(i32)
 
-                    // 4 ±íÊ¾ LZF Ñ¹Ëõ×Ö·û´®
+                    // 4 è¡¨ç¤º LZF å‹ç¼©å­—ç¬¦ä¸²
                     case 3 =>
-                        val clen = decodeLength() // Ñ¹ËõºóµÄ³¤¶È
-                        val uclen = decodeLength() // Î´Ñ¹Ëõ³¤¶È
+                        val clen = decodeLength() // å‹ç¼©åçš„é•¿åº¦
+                        val uclen = decodeLength() // æœªå‹ç¼©é•¿åº¦
                         val buf = read(clen)
 
                         val original = new Array[Byte](uclen)
@@ -358,7 +358,7 @@ class Parser(ins: InputStream, visitor: RdbVisitor) {
                         new RdbString(original)
                 }
             }
-            case _ => { // Ç°×º³¤¶È±àÂëµÄ×Ö·û´®
+            case _ => { // å‰ç¼€é•¿åº¦ç¼–ç çš„å­—ç¬¦ä¸²
                 val len = decodeNormalLength(b)
                 val buf = new Array[Byte](len)
                 val readed = ins.read(buf)
@@ -367,7 +367,7 @@ class Parser(ins: InputStream, visitor: RdbVisitor) {
         }
     }
 
-    // ÕûÊıÊÇ¸ßÎ»ÓÅÏÈ
+    // æ•´æ•°æ˜¯é«˜ä½ä¼˜å…ˆ
     def decodeNormalLength(b: Int): Int = {
         b >>> 6 match {
             case 0 => b
@@ -378,7 +378,7 @@ class Parser(ins: InputStream, visitor: RdbVisitor) {
         }
     }
 
-    // ½âÎö ³¤¶È ±àÂë
+    // è§£æ é•¿åº¦ ç¼–ç 
     def decodeLength(): Int = {
         val b = readUint()
 
@@ -403,7 +403,7 @@ class Parser(ins: InputStream, visitor: RdbVisitor) {
         getLittleEndianLong(bytes, 0, byteCount)
     }
 
-    // °´ little endian ±àÂë»ñÈ¡ÕûÊı
+    // æŒ‰ little endian ç¼–ç è·å–æ•´æ•°
     def getLeInt(buf: Array[Byte], start: Int, len: Int): Int = getLittleEndianLong(buf, start, len).asInstanceOf[Int]
 
     def getBigEndianLong(buf: Array[Byte], start: Int, len: Int): Long = {

@@ -3,7 +3,7 @@ package net.coderbee.redis.rdb
 import net.coderbee.redis.RdbString
 
 /**
- * rdb ÎÄ¼ş½âÎöµÄ»Øµ÷´¦Àí³ÌĞò
+ * rdb æ–‡ä»¶è§£æçš„å›è°ƒå¤„ç†ç¨‹åº
  */
 trait RdbVisitor {
     def onVersion(version: Int)
